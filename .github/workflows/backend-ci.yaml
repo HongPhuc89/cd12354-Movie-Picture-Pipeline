@@ -7,7 +7,6 @@ on:
       - main
     paths:
       - "starter/backend"
-      - ".github/workflows/backend"
 jobs:
     backend-lint:
     name: Lint Job
