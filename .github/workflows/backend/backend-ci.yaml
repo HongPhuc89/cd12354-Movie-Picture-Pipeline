@@ -1,0 +1,59 @@
+name: Backend CI
+
+on:
+  workflow_dispatch: null
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "starter/backend"
+      - ".github/workflows/backend"
+jobs:
+    backend-lint:
+    name: Lint Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev
+      - name: Run lint check
+        run: pipenv run lint
+
+  backend-test:
+    name: Test Job
+    runs-on: ubuntu-latest
+    needs:
+      - backend-lint
+    defaults:
+      run:
+        working-directory: ./starter/backend
+    steps:
+      - name: Install dependencies
+        run: |
+          pipenv install pytest --dev
+      - name: Run tests
+        run: |
+          pipenv run test
+
+  build:
+    needs:
+      - backend-lint
+      - backend-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: |
+          docker build -t backend .
