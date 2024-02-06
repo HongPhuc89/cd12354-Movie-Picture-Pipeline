@@ -5,8 +5,8 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "starter/backend"
+    # paths:
+    #   - "starter/backend"
 jobs:
     backend-lint:
       name: Lint Job
